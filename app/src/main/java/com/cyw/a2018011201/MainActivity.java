@@ -10,6 +10,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,22 +35,31 @@ public class MainActivity extends AppCompatActivity {
             //response就是抓到的資料(此method不用寫執行緒)
             public void onResponse(String response) {
                 Log.d("Net",response);
+                //解析資料倆方法1. JSONArray+JSONObject, 方法2.建立一個類別,放入Gson即可使用
+                // 以下用JSONArray & JSONObject解析資料 (JSON的格式 , {}代表物件, []代表陣列)
                 try {
-                    //JSON的格式 , {}代表物件, []代表陣列
                     JSONArray array=new JSONArray(response);
                     for (int i=0;i<array.length();i++) {
                         JSONObject obj = array.getJSONObject(i);
                         String str1 = obj.getString("district");
-                        Log.d("Net", str1);
+                        Log.d("JsonArray", str1);
                         String str2 = obj.getString("address");
-                        Log.d("Net", str2);
+                        Log.d("JsonArray", str2);
                         String str3 = obj.getString("tel");
-                        Log.d("Net", str3);
+                        Log.d("JsonArray", str3);
                         String str4 = obj.getString("opening_hours");
-                        Log.d("Net", str4);
+                        Log.d("JsonArray", str4);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }
+                //以下用Gson法,要先把類別建好, 如animal
+                // 先去google -> Gson+ grandle 找到import grandle的指令 ( https://mvnrepository.com/artifact/com.google.code.gson/gson)
+                Gson gson=new Gson();
+                animal[] houses=gson.fromJson(response,animal[].class);
+                for (animal a : houses)
+                {
+                    Log.d("Gson", a.district + "," + a.address);
                 }
             }
         }, new Response.ErrorListener() {
